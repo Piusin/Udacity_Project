@@ -1,0 +1,41 @@
+{
+	"name": "pipeline Employee Master to Synapse",
+	"properties": {
+		"activities": [
+			{
+				"name": "df_transfer nycpayroll2021 to sql",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "df_load_Employee_to_synapse",
+						"type": "DataFlowReference"
+					},
+					"staging": {
+						"linkedService": {
+							"referenceName": "ls_adls",
+							"type": "LinkedServiceReference"
+						},
+						"folderPath": "jubileebronzelakeuat/synapse/workspaces/jubileeinsurancewrkspc-uat/warehouse/adlsnycpayroll-pius-pk/dirstaging"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-02-03T21:17:38Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

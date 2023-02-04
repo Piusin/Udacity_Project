@@ -1,0 +1,153 @@
+{
+	"name": "Master pipeline - data load into synapse",
+	"properties": {
+		"activities": [
+			{
+				"name": "df_load_Employee_to_synapse",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "df_load_Employee_to_synapse",
+						"type": "DataFlowReference"
+					},
+					"staging": {
+						"linkedService": {
+							"referenceName": "ls_adls",
+							"type": "LinkedServiceReference"
+						},
+						"folderPath": "jubileebronzelakeuat/synapse/workspaces/jubileeinsurancewrkspc-uat/warehouse/adlsnycpayroll-pius-pk/dirstaging"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "df_load_Title_to_synapse",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "df_load_Title_to_synapse",
+						"type": "DataFlowReference"
+					},
+					"staging": {
+						"linkedService": {
+							"referenceName": "ls_adls",
+							"type": "LinkedServiceReference"
+						},
+						"folderPath": "jubileebronzelakeuat/synapse/workspaces/jubileeinsurancewrkspc-uat/warehouse/adlsnycpayroll-pius-pk/dirstaging"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "df_load_Agency_to_synapse",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "df_load_Agency_to_synapse",
+						"type": "DataFlowReference"
+					},
+					"staging": {
+						"linkedService": {
+							"referenceName": "ls_adls",
+							"type": "LinkedServiceReference"
+						},
+						"folderPath": "jubileebronzelakeuat/synapse/workspaces/jubileeinsurancewrkspc-uat/warehouse/adlsnycpayroll-pius-pk/dirstaging"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "df_load_nycpayroll_2021_sql_to_synapse",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "df_load_Employee_to_synapse",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "df_load_Agency_to_synapse",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "df_load_Title_to_synapse",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "df_load_nycpayroll_2021_sql_to_synapse",
+						"type": "DataFlowReference"
+					},
+					"staging": {
+						"linkedService": {
+							"referenceName": "ls_adls",
+							"type": "LinkedServiceReference"
+						},
+						"folderPath": "jubileebronzelakeuat/synapse/workspaces/jubileeinsurancewrkspc-uat/warehouse/adlsnycpayroll-pius-pk/dirstaging"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-02-03T21:28:17Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

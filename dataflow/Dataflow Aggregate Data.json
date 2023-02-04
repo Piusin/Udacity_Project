@@ -1,0 +1,119 @@
+{
+	"name": "Dataflow Aggregate Data",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "table_synapse_nycpayroll_summary",
+						"type": "DatasetReference"
+					},
+					"name": "sqlnycpayrollsummary"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_synaspe_history_nycpayroll_2021",
+						"type": "DatasetReference"
+					},
+					"name": "historynycpayroll2021"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "table_synapse_nycpayroll_summary",
+						"type": "DatasetReference"
+					},
+					"name": "loadsynapsenycpayrollsummary",
+					"rejectedDataLinkedService": {
+						"referenceName": "ls_adls",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "union1"
+				},
+				{
+					"name": "YearFilter"
+				},
+				{
+					"name": "TotalPaid"
+				},
+				{
+					"name": "aggregate1"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     df_param_fiscal_year as integer (2021)",
+				"}",
+				"source(output(",
+				"          FiscalYear as integer,",
+				"          AgencyName as string,",
+				"          TotalPaid as double",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table',",
+				"     staged: true) ~> sqlnycpayrollsummary",
+				"source(output(",
+				"          FiscalYear as integer,",
+				"          Column_2 as string,",
+				"          Column_3 as string,",
+				"          AgencyName as string,",
+				"          Column_5 as string,",
+				"          Column_6 as string,",
+				"          Column_7 as string,",
+				"          Column_8 as string,",
+				"          Column_9 as string,",
+				"          Column_10 as string,",
+				"          Column_11 as string,",
+				"          Column_12 as string,",
+				"          Column_13 as string,",
+				"          Column_14 as string,",
+				"          RegularHours as integer,",
+				"          RegularGrossPaid as double,",
+				"          Column_17 as string,",
+				"          TotalOTPaid as double,",
+				"          TotalOtherPay as double",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> historynycpayroll2021",
+				"sqlnycpayrollsummary, historynycpayroll2021 union(byName: true)~> union1",
+				"union1 filter(toInteger(FiscalYear) >=$df_param_fiscal_year) ~> YearFilter",
+				"YearFilter derive(TotalPaid = RegularGrossPaid + TotalOTPaid+TotalOtherPay) ~> TotalPaid",
+				"TotalPaid aggregate(groupBy(AgencyName,",
+				"          FiscalYear),",
+				"     TotalPaid = sum(TotalPaid)) ~> aggregate1",
+				"aggregate1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          FiscalYear as integer,",
+				"          AgencyName as string,",
+				"          TotalPaid as double",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          FiscalYear,",
+				"          AgencyName,",
+				"          TotalPaid",
+				"     )) ~> loadsynapsenycpayrollsummary"
+			]
+		}
+	}
+}

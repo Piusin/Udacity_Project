@@ -1,0 +1,9 @@
+{
+	"name": "pwkdatafactory",
+	"location": "northeurope",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "3698a86e-069e-493c-b0dc-6d8909c6c587",
+		"tenantId": "52a038f0-1b3f-49f8-af54-d46018d67cee"
+	}
+}

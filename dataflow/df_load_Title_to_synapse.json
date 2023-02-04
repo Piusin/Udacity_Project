@@ -1,0 +1,56 @@
+{
+	"name": "df_load_Title_to_synapse",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_synapse_TitleMaster",
+						"type": "DatasetReference"
+					},
+					"name": "sourcetblTitle"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_synapse_NYC_Payroll_TITLE_MD",
+						"type": "DatasetReference"
+					},
+					"name": "sinksynapseTitle"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          Column_1 as string,",
+				"          Column_2 as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourcetblTitle",
+				"sourcetblTitle sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          TitleCode as string,",
+				"          TitleDescription as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          TitleCode = Column_1,",
+				"          TitleDescription = Column_2",
+				"     )) ~> sinksynapseTitle"
+			]
+		}
+	}
+}
